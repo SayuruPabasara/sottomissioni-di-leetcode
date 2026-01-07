@@ -10,23 +10,36 @@ class Node:
 class Solution(object):
     def copyRandomList(self, head):
         if not head:
-            return None
+            return head
 
-        old_to_new = {}
-
-        # PASS 1: Create all nodes
-        curr = head
+        # STEP 1: Create new nodes interleaved with original nodes
+        curr=head
         while curr:
-            old_to_new[curr] = Node(curr.val)
-            curr = curr.next
+            new_node=Node(curr.val)
+            new_node.next=curr.next
+            curr.next=new_node
+            curr=curr.next.next
 
-        # PASS 2: Assign next and random pointers
-        curr = head
+        # STEP 2: Assign random pointers to copied nodes
+        curr=head
         while curr:
-            copy = old_to_new[curr]
-            copy.next = old_to_new.get(curr.next)
-            copy.random = old_to_new.get(curr.random)
-            curr = curr.next
+            if curr.random:
+                curr.next.random=curr.random.next
+            curr=curr.next.next
 
-        return old_to_new[head]
+        # STEP 3: Separate original and copied lists
+        curr=head
+        copy_head=head.next
+        copy_curr=copy_head
+        while curr:
+            curr.next=curr.next.next
+            
+            if copy_curr.next:
+                copy_curr.next=copy_curr.next.next
+            curr=curr.next
+            copy_curr=copy_curr.next
+        
+        return copy_head
+        
+            
         
